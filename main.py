@@ -26,4 +26,8 @@ root.title("TaxiManager")
 root.geometry("400x400")
 mkrep = ttk.Button(text="Сформировать отчёт", command=lambda: print(records))
 mkrep.grid(row=1,column=1)
+listbox = Listbox(root)
+listbox.grid(row=2,column=1)
+for record in records:
+    listbox.insert(END, record)
 root.mainloop()
