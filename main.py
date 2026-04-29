@@ -54,6 +54,7 @@ class Task1Frame(Frame):
         Label(pf, text="(пусто = все статусы)").grid(row=0, column=2, padx=4)
 
         ttk.Button(self, text="Сформировать отчёт", command=self.build).pack(pady=4)
+        ttk.Button(self, text="Скопировать в буфер обмена", command=self.copy_to_clipboard).pack(pady=4)
 
         self.text = Text(self, font=("Courier New", 10), wrap="none",
                          bg="#1e1e1e", fg="#d4d4d4")
@@ -63,7 +64,10 @@ class Task1Frame(Frame):
         sy.pack(side="right", fill="y")
         sx.pack(side="bottom", fill="x")
         self.text.pack(fill="both", expand=True)
-
+    def copy_to_clipboard(self):
+        self.clipboard_clear()
+        self.clipboard_append(self.text.get("1.0", "end").rstrip())
+        messagebox.showinfo("Скопировано", "Текст отчёта скопирован в буфер обмена.")
     def build(self):
         arg1 = self.status_var.get().strip() or None
 
@@ -143,7 +147,7 @@ class Task2Frame(Frame):
         Label(pf, text="(пусто = все)").grid(row=0, column=2)
 
         ttk.Button(self, text="Сформировать сводную таблицу", command=self.build).pack(pady=4)
-
+        ttk.Button(self, text="Скопировать в буфер обмена", command=self.copy_to_clipboard).pack(pady=4)
         self.text = Text(self, font=("Courier New", 10), wrap="none",
                          bg="#1e1e1e", fg="#d4d4d4")
         sx = ttk.Scrollbar(self, orient="horizontal", command=self.text.xview)
@@ -152,7 +156,10 @@ class Task2Frame(Frame):
         sy.pack(side="right", fill="y")
         sx.pack(side="bottom", fill="x")
         self.text.pack(fill="both", expand=True)
-
+    def copy_to_clipboard(self):
+        self.clipboard_clear()
+        self.clipboard_append(self.text.get("1.0", "end").rstrip())
+        messagebox.showinfo("Скопировано", "Текст сводной таблицы скопирован в буфер обмена.")
     def build(self):
         arg1 = self.status_var.get().strip() or None
         sql = f"""
