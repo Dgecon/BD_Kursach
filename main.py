@@ -404,8 +404,61 @@ class Task4Frame(Frame):
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True)
         plt.close(fig)
+#--------------------------------------------------------------------------------------
 
 
+
+
+class TaskTeacher(Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        Label(self, text="Задание на защиту. Столбчатая диаграмма авто - заказы",
+              font=("Courier New", 12, "bold")).pack(pady=6)
+        ttk.Button(self, text="Построить диаграмму", command=self.build).pack(pady=4)
+        self.canvas_frame = Frame(self)
+        self.canvas_frame.pack(fill="both", expand=True)
+    def build(self):
+        sql = """
+            SELECT
+                c.model                        AS car_model,
+                COUNT(*)::INT                  AS order_count
+            FROM orderr o
+            JOIN car c ON c.license_plate = o.license_plate
+            WHERE o.status = 'Выполнен'
+            GROUP BY c.model
+            ORDER BY order_count DESC
+        """
+        rows = run_query(sql).fetchall()
+
+        if not rows:
+            messagebox.showinfo("Нет данных", "Нет данных для построения диаграммы.")
+            return
+
+        labels = [r[0] for r in rows]
+        values = [r[1] for r in rows]
+
+        for w in self.canvas_frame.winfo_children():
+            w.destroy()
+
+        fig, ax = plt.subplots(figsize=(10, 5))
+        x_positions = range(len(labels))
+        ax.bar(x_positions, values, color="skyblue")
+        ax.set_xticks(x_positions)
+        ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=8)
+        ax.set_xlabel("Модель автомобиля")
+        ax.set_ylabel("Количество выполненных заказов")
+        ax.set_title("Количество выполненных заказов по моделям автомобилей")
+        fig.tight_layout()
+
+        canvas = FigureCanvasTkAgg(fig, master=self.canvas_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=True)
+        plt.close(fig)
+
+
+
+
+#--------------------------------------------------------------------------------------
 def main():
     root = Tk()
     root.title("TaxiManager — ЛР8 | Подпорин Н.Ю.")
@@ -419,11 +472,13 @@ def main():
     t2 = Task2Frame(nb)
     t3 = Task3Frame(nb)
     t4 = Task4Frame(nb)
+    t5 = TaskTeacher(nb)
 
     nb.add(t1, text="  Задание 1: Текстовый отчёт  ")
     nb.add(t2, text="  Задание 2: Сводная таблица  ")
     nb.add(t3, text="  Задание 3: График  ")
     nb.add(t4, text="  Задание 4: Диаграмма  ")
+    nb.add(t5, text="  Задание на защиту  ")
 
     root.mainloop()
     conn.close()
